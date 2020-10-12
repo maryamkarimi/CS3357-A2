@@ -1,4 +1,4 @@
-from socket import *
+import socket
 
 TCP_IP = '127.0.0.1'
 TCP_PORT = 8092
@@ -14,15 +14,15 @@ class HTTPClient:
     def main(self):
 
         # Create Socket
-        clientSocket = socket(AF_INET, SOCK_STREAM)
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         # Try to connect to server
         try:
-            clientSocket.connect((TCP_IP, TCP_PORT))
+            client_socket.connect((TCP_IP, TCP_PORT))
             print('Connection Established')
         except Exception:
             print('Error encountered while connecting to server')
-            clientSocket.close()
+            client_socket.close()
             quit()
 
         cmd = input('Input command (ex. GET /index.html HTTP/1.1):')
@@ -30,22 +30,22 @@ class HTTPClient:
         host = "Host: %s:" % (HOST_NAME)
 
         request = "%s%s%s" % (cmd, BLANK_LINE, host)
-        clientSocket.send(request.encode())
+        client_socket.send(request.encode())
 
-        response = clientSocket.recv(BUFF_SIZE)
+        response = client_socket.recv(BUFF_SIZE)
         headers, sep, body = response.partition(b'\r\n\r\n')
 
         headers = headers.decode()
-        responseCode = headers.split(BLANK_LINE)[0].split()[1]
+        response_code = headers.split(BLANK_LINE)[0].split()[1]
 
-        if responseCode == "200":
-            fileName = cmd.split()[1]
-            f = open(fileName, "wb")
+        if response_code == "200":
+            file_name = cmd.split()[1]
+            f = open(file_name, "wb")
             f.write(body)
             f.close()
 
         print('From Server: ', headers)
-        clientSocket.close()
+        client_socket.close()
         print('Connection Closed')
 
 

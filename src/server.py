@@ -1,6 +1,6 @@
 # SAVING THINGS LIKE /A/ 
 
-from socket import *
+import socket
 import os
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath('__file__'))
@@ -30,20 +30,20 @@ class HTTPServer:
     def run(self):
 
         # Create TCP socket for server
-        serverSocket = socket(AF_INET, SOCK_STREAM)
+        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         # Bind the configured sever ip and port
-        serverSocket.bind((TCP_IP, TCP_PORT))
+        server_socket.bind((TCP_IP, TCP_PORT))
 
         # Start listening for connections
-        serverSocket.listen(1)
+        server_socket.listen(1)
         print('The server is ready to receive')
 
         f = open("", 'rb')  # open requested file
         f.close()
 
         # while True:
-        #     connectionSocket, addr = serverSocket.accept()
+        #     connectionSocket, addr = server_socket.accept()
 
         #     print('Request recieved from ', addr)
 
@@ -69,20 +69,20 @@ class HTTPServer:
 
         elif args[2].upper() != 'HTTP/1.1':
             response_line = "HTTP/1.1 %s %s" % (
-            HTTPStatus.HTTP_VERSION_NOT_SUPPORTED[0], HTTPStatus.HTTP_VERSION_NOT_SUPPORTED[1])
+                HTTPStatus.HTTP_VERSION_NOT_SUPPORTED[0], HTTPStatus.HTTP_VERSION_NOT_SUPPORTED[1])
             response_body = HTTPStatus.HTTP_VERSION_NOT_SUPPORTED[2].encode()
 
         else:
             try:
-                fileName = args[1]
-                f = open(fileName, 'rb')  # open requested file
+                file_name = args[1]
+                f = open(file_name, 'rb')  # open requested file
 
                 response_line = "HTTP/1.1 %s %s" % (HTTPStatus.OK[0], HTTPStatus.OK[1])
                 response_body = f.read()
 
-                fileType = args[1].split('.')[1]
-                if fileType.upper() == 'JPG' or fileType.upper() == 'JPEG' or fileType.upper() == 'PNG' or fileType.upper() == 'GIF':
-                    content_type = fileType
+                file_type = args[1].split('.')[1]
+                if file_type.upper() == 'JPG' or file_type.upper() == 'JPEG' or file_type.upper() == 'PNG' or file_type.upper() == 'GIF':
+                    content_type = file_type
 
                 # send header first
                 response_headers = "Content-Length: %s" % (f.tell())
