@@ -1,15 +1,10 @@
-# SAVING THINGS LIKE /A/ 
-
 import socket
-import os
 
-SCRIPT_DIR = os.path.dirname(os.path.realpath('__file__'))
-
-# Adress for the server
+# Address for the server
 TCP_IP = 'localhost'
 
 # Port for the server
-TCP_PORT = 8092
+TCP_PORT = 8090
 
 BLANK_LINE = '\r\n'
 
@@ -39,26 +34,25 @@ class HTTPServer:
         server_socket.listen(1)
         print('The server is ready to receive')
 
-        f = open("", 'rb')  # open requested file
-        f.close()
+        while True:
+            connection_socket, addr = server_socket.accept()
+            print('Request recieved from ', addr)
 
-        # while True:
-        #     connectionSocket, addr = server_socket.accept()
+            # Read data
+            request = connection_socket.recv(1024).decode()
 
-        #     print('Request recieved from ', addr)
+            try:
+                request = request.split(BLANK_LINE)[0]
+                response = self.handle_get(request.split())
 
-        #     # Read data
-        #     request = connectionSocket.recv(1024).decode()
+                # Send response back to the client
+                connection_socket.send(response)
+            except IndexError:
+                connection_socket.close()
 
-        #     request = request.split(BLANK_LINE)[0]
-        #     response = self.handleGet(request.split())
-
-        #     # Send response back to the client
-        #     connectionSocket.send(response)
-        # connectionSocket.close()
-
-    # GET command  
-    def handleGet(self, args):
+    # GET command
+    @staticmethod
+    def handle_get(args):
 
         content_type = 'text-html'
         response_headers = ''
@@ -74,22 +68,24 @@ class HTTPServer:
 
         else:
             try:
+                # open requested file
                 file_name = args[1]
-                f = open(file_name, 'rb')  # open requested file
+                f = open(file_name, 'rb')
 
-                response_line = "HTTP/1.1 %s %s" % (HTTPStatus.OK[0], HTTPStatus.OK[1])
                 response_body = f.read()
 
                 file_type = args[1].split('.')[1]
                 if file_type.upper() == 'JPG' or file_type.upper() == 'JPEG' or file_type.upper() == 'PNG' or file_type.upper() == 'GIF':
                     content_type = file_type
 
-                # send header first
+                # set headers
                 response_headers = "Content-Length: %s" % (f.tell())
+                response_line = "HTTP/1.1 %s %s" % (HTTPStatus.OK[0], HTTPStatus.OK[1])
 
+                # close the file
                 f.close()
 
-            except Exception:
+            except IOError:
                 response_line = "HTTP/1.1 %s %s" % (HTTPStatus.NOT_FOUND[0], HTTPStatus.NOT_FOUND[1])
                 response_body = HTTPStatus.NOT_FOUND[2].encode()
 
