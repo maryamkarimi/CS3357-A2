@@ -68,8 +68,12 @@ class HTTPServer:
 
         else:
             try:
-                # open requested file
+                # if the file name starts with a '/', add a '.' to it so it can be properly handled.
                 file_name = args[1]
+                if file_name.startswith('/'):
+                    file_name = '.' + file_name
+
+                # open requested file
                 f = open(file_name, 'rb')
 
                 response_body = f.read()
