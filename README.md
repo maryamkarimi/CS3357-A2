@@ -1,5 +1,5 @@
 #### A stripped down and simplified web server and web downloader client in Python 
-
+------
 In response to a request, the webserver simply reads the contents of a named file and pushes it back over the same connection.
 
 The webserver only supports the GET request of HTTP/1.1. 
