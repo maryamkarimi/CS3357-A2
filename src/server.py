@@ -9,6 +9,8 @@ TCP_PORT = 8090
 
 BLANK_LINE = '\r\n'
 
+BUFFER_SIZE = 1024
+
 
 class HTTPStatus(Enum):
     # success
@@ -45,7 +47,7 @@ class HTTPServer:
             print('Request received from ', addr)
 
             # Read data
-            request = connection_socket.recv(1024).decode()
+            request = connection_socket.recv(BUFFER_SIZE).decode()
 
             try:
                 request = request.split(BLANK_LINE)[0]
@@ -53,6 +55,9 @@ class HTTPServer:
 
                 # Send response back to the client
                 connection_socket.send(response)
+
+                # close the connection
+                connection_socket.close()
             except ValueError:
                 connection_socket.close()
 

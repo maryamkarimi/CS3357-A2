@@ -8,7 +8,7 @@ HOST_NAME = '127.0.0.1'
 
 BLANK_LINE = '\r\n'
 
-BUFF_SIZE = 40960000
+BUFFER_SIZE = 1024
 
 
 class HTTPClient:
@@ -16,7 +16,7 @@ class HTTPClient:
     def main(self):
         # Get command from the user
         cmd = input('Input command (ex. GET /index.html HTTP/1.1):')
-
+        # If the command format is incorrect, i.e. "GET", "GET /index.html"
         if len(cmd.split(' ')) != 3:
             print('Please enter valid command (ex. GET /index.html HTTP/1.1)')
         else:
@@ -44,7 +44,12 @@ class HTTPClient:
         client_socket.send(request.encode())
 
         # Receive response from the server
-        response = client_socket.recv(BUFF_SIZE)
+        response = b''
+        while True:
+            data = client_socket.recv(BUFFER_SIZE)
+            if not data:
+                break
+            response += data
 
         headers, sep, body = response.partition(b'\r\n\r\n')
         headers = headers.decode()
