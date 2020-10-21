@@ -1,13 +1,9 @@
 To run the server:
 
-`sudo python server.py`
+`python server.py`
 
 To run the client:
 
-`sudo python client.py`
+`python client.py {server_name} {port_number} {file_name}`
 
-Then, you can give the client a GET request such as
-
-`GET /index.html HTTP/1.1`
-`GET /data/image.jpg HTTP/1.1`
-`GET file.txt HTTP/1.1`
+For example, `python client.py localhost 8090 test-data/test.txt`
