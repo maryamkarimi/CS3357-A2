@@ -1,11 +1,6 @@
 import os
 import socket
 
-TCP_IP = '127.0.0.1'
-TCP_PORT = 8090
-
-HOST_NAME = '127.0.0.1'
-
 BLANK_LINE = '\r\n'
 
 BUFFER_SIZE = 1024
@@ -14,31 +9,38 @@ BUFFER_SIZE = 1024
 class HTTPClient:
 
     def main(self):
-        # Get command from the user
-        cmd = input('Input command (ex. GET /index.html HTTP/1.1):')
-        # If the command format is incorrect, i.e. "GET", "GET /index.html"
-        if len(cmd.split(' ')) != 3:
-            print('Please enter valid command (ex. GET /index.html HTTP/1.1)')
-        else:
-            self.handle_request(cmd)
+        # Get input from the user
+        host_name = input('Input host name (ex. localhost): ')
+        try:
+            port_number = int(input('Input host name (ex. 8090): '))
+        except ValueError:
+            print('The entered port is not valid')
+            return
+
+        file_name = input('Input file name (ex. index.html): ')
+
+        self.handle_request(host_name, port_number, file_name)
 
     @staticmethod
-    def handle_request(cmd):
+    def handle_request(host_name, port_number, file_path):
 
         # Create Socket
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         # Try to connect to server
         try:
-            client_socket.connect((TCP_IP, TCP_PORT))
+            client_socket.connect((host_name, port_number))
             print('Connection Established')
         except ConnectionError:
             print('Error encountered while connecting to server')
             client_socket.close()
             quit()
+        except socket.gaierror:
+            print('Server name or port number is not valid')
+            quit()
 
-        host = "Host: %s:" % HOST_NAME
-        request = "%s%s%s" % (cmd, BLANK_LINE, host)
+        host = "Host: %s:%s" % (host_name, port_number)
+        request = "GET %s HTTP/1.1%s%s" % (file_path, BLANK_LINE, host)
 
         # Send request to the server
         client_socket.send(request.encode())
@@ -58,7 +60,6 @@ class HTTPClient:
         print('---------------------------------------------------')
         if response_code == "200":
             # Get the file name without the full path and write to it
-            file_path = cmd.split()[1]
             file_name = os.path.basename(file_path)
             f = open(file_name, "wb")
             f.write(body)
