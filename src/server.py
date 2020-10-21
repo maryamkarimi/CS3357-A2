@@ -40,7 +40,7 @@ class HTTPServer:
 
         # Start listening for connections
         server_socket.listen(1)
-        print('The server is ready to receive')
+        print('The server is ready to receive on port', TCP_PORT)
 
         while True:
             connection_socket, addr = server_socket.accept()
