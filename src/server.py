@@ -92,7 +92,7 @@ class HTTPServer:
 
                 # set headers and status
                 file_size = f.tell()
-                response_headers = "Content-Length: %s" % file_size
+                response_headers = 'Content-Length: %s' % file_size
                 status = HTTPStatus.OK
 
                 # close the file
@@ -107,12 +107,12 @@ class HTTPServer:
             response_body = status.status_message.encode()
 
         response_headers = 'Content-type: %s%s%s' % (content_type, BLANK_LINE, response_headers)
-        response_headers = "%s%s%s%s%s" % (response_line, BLANK_LINE, response_headers, BLANK_LINE, BLANK_LINE)
+        response_headers = '%s%s%s%s%s' % (response_line, BLANK_LINE, response_headers, BLANK_LINE, BLANK_LINE)
         return response_headers.encode() + response_body
 
     @staticmethod
     def get_response_line(response_code, response_description):
-        return "HTTP/1.1 %s %s" % (response_code, response_description)
+        return 'HTTP/1.1 %s %s' % (response_code, response_description)
 
 
 if __name__ == '__main__':
