@@ -1,5 +1,6 @@
 import os
 import socket
+import sys
 
 BLANK_LINE = '\r\n'
 
@@ -8,16 +9,12 @@ BUFFER_SIZE = 1024
 
 class HTTPClient:
 
-    def main(self):
-        # Get input from the user
-        host_name = input('Input host name (ex. localhost): ')
+    def run(self, host_name, port_number, file_name):
         try:
-            port_number = int(input('Input host name (ex. 8090): '))
+            port_number = int(port_number)
         except ValueError:
             print('The entered port is not valid')
             return
-
-        file_name = input('Input file name (ex. index.html): ')
 
         self.handle_request(host_name, port_number, file_name)
 
@@ -39,8 +36,8 @@ class HTTPClient:
             print('Server name or port number is not valid')
             quit()
 
-        host = "Host: %s:%s" % (host_name, port_number)
-        request = "GET %s HTTP/1.1%s%s" % (file_path, BLANK_LINE, host)
+        host = 'Host: %s:%s' % (host_name, port_number)
+        request = 'GET %s HTTP/1.1%s%s' % (file_path, BLANK_LINE, host)
 
         # Send request to the server
         client_socket.send(request.encode())
@@ -58,10 +55,10 @@ class HTTPClient:
         response_code = headers.split(BLANK_LINE)[0].split()[1]
 
         print('---------------------------------------------------')
-        if response_code == "200":
+        if response_code == '200':
             # Get the file name without the full path and write to it
             file_name = os.path.basename(file_path)
-            f = open(file_name, "wb")
+            f = open(file_name, 'wb')
             f.write(body)
             f.close()
             print('From Server: ', headers)
@@ -76,4 +73,10 @@ class HTTPClient:
 
 
 if __name__ == '__main__':
-    HTTPClient().main()
+    if len(sys.argv) != 4:
+        print('Incorrect number of arguments was entered')
+        quit()
+
+    args = sys.argv
+
+    HTTPClient().run(args[1], args[2], args[3])
